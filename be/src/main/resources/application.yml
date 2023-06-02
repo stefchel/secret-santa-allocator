@@ -1,0 +1,22 @@
+"%prod":
+  quarkus:
+    datasource:
+      db-kind: pg
+      username: root
+      password: root
+
+      jdbc:
+        url: jdbc:postgresql://localhost:5432/test_db
+        max-size: 16
+
+    liquibase:
+      migrate-at-start: true
+
+"%dev":
+  quarkus:
+    datasource:
+      devservices:
+        port: 49174
+    hibernate-orm:
+      database:
+        generation: drop-and-create
