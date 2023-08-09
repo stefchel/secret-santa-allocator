@@ -13,5 +13,6 @@ public class ParticipantDto {
 
     private Long id;
     private String name;
+    private String matchedName;
 
 }

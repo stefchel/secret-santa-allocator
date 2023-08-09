@@ -18,7 +18,7 @@ public class Game extends PanacheEntity {
     private String name;
 
     @OneToMany
-    @JoinColumn(name = "participant_id")
+    @JoinColumn(name = "game_id")
     private List<Participant> participants;
 
     public void addParticipant(Participant p) {

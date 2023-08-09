@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class GameResource {
 
     @Inject
-    private GameMapper gameMapper;
+    GameMapper gameMapper;
     @Inject
-    private ParticipantMapper participantMapper;
+    ParticipantMapper participantMapper;
 
     @GET
     public List<GameDto> getAll() {
@@ -66,13 +66,13 @@ public class GameResource {
 
     @GET
     @Path("/{gid}/matches")
+    @Transactional
     public Map<String, String> getMatches(long gid) {
         Optional<Game> g = Game.findByIdOptional(gid);
         if (g.isEmpty()) {
             throw new IllegalArgumentException("id is null");
         } else {
-            List<String> participants = g.get().getParticipants().stream()
-                    .map(Participant::getName)
+            List<Participant> participants = g.get().getParticipants().stream()
                     .collect(Collectors
                             .collectingAndThen(
                                     Collectors.toCollection(ArrayList::new),
@@ -86,15 +86,39 @@ public class GameResource {
                 throw new IllegalArgumentException("there need to be at least 2 participants");
             }
 
-            return participants.stream()
+
+            Map<Participant, Participant> matches = participants.stream()
                     .collect(Collectors
                             .toMap(
                                     Function.identity(),
                                     p ->
                                             participants.get((participants.indexOf(p) + 1) % participants.size())));
 
+            matches.forEach((key, value) -> {
+                key.setMatch(value);
+                key.persist();
+            });
+
+            return matches.entrySet().stream()
+                    .collect(Collectors
+                            .toMap(
+                                    entry -> entry.getKey().getName(),
+                                    entry -> entry.getValue().getName()));
+
             // ToDo add test and evaluate that every match has the same odds
-            // ToDo Store the match to the participants --> maybe with possibility to reset match
+        }
+    }
+
+    @DELETE
+    @Path("/{gid}/matches")
+    @Transactional
+    public void deleteMatches(long gid) {
+        Optional<Game> g = Game.findByIdOptional(gid);
+        if (g.isEmpty()) {
+            throw new IllegalArgumentException("id is null");
+        } else {
+            Game game = g.get();
+            game.getParticipants().forEach(p -> p.setMatch(null));
         }
     }
 }
