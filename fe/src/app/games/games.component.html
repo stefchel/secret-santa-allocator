@@ -1,0 +1,12 @@
+<h2>Game:</h2>
+
+<ul class="games">
+    <li *ngFor="let game of games">
+      <button type="button" (click)="onSelect(game)">
+        <span class="badge">{{game.id}}</span>
+        <span class="name">{{game.name}}</span>
+      </button>
+    </li>
+</ul>
+
+<app-game-detail [game]="selectedGame"></app-game-detail>
