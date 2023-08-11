@@ -6,6 +6,7 @@ import de.stsc.presentation.dto.GameDto;
 import de.stsc.presentation.dto.ParticipantDto;
 import de.stsc.presentation.mapper.GameMapper;
 import de.stsc.presentation.mapper.ParticipantMapper;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Path("/game")
 @ApplicationScoped
+@Slf4j
 public class GameResource {
 
     @Inject
@@ -27,6 +29,7 @@ public class GameResource {
 
     @GET
     public List<GameDto> getAll() {
+        log.info("getting all games");
         return Game.<Game>listAll().stream()
                 .map(gameMapper::toDto)
                 .collect(Collectors.toList());
